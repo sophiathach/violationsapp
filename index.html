@@ -3,32 +3,41 @@
 <body>
 <div id="map" />
 <div id="form">
-<p>Click the button to get your coordinates.</p>
-Address: <input type="text" id="address" name="address" value="">
+  
+  Address:
+  <input type="text" id="address" name="address" value="">
 
-   <br><br>or<br><br>  
+  <br>
+  <br>or
+  <br>
+  <br>
+  <p>Click the button to get your coordinates.</p>
+   Latitude:
 
-Latitude:<input type="text" id="lat" name="lat" value="">
-Longitude: <input type="text" id="lon" name"lon" value="">
- 
-<button onclick="getLocation()" >
-<image src="http://discoveringthebluemountains.com/assets/themes/default/images/geolocation.png"
-width="15px" height="15px"></button><br>
+  <input type="text" id="lat" name="lat" value=""> Longitude:
+  <input type="text" id="lon" name "lon" value="">
 
-Radius:<input type="text" size="1" id="radius"> miles<br>
+  <button onclick="getLocation()">
+
+    <image src="http://discoveringthebluemountains.com/assets/themes/default/images/geolocation.png" width="15px" height="15px">
+  </button>
+  <br> Radius:
+
+  <input type="text" size="1" id="radius"> miles
+  <br>
 
 <input type="checkbox" id="all" onclick="clickall()" clicked="true"> all<br>
 <input type="checkbox" id="nuisance"> nuisance<br>
-<input type="checkbox" id="crime"> crime <br>
-<input type="checkbox" id="potato"> potato <br>
+<input type="checkbox" id="zoning"> zoning <br>
+<input type="checkbox" id="vehicle"> vehicle <br>
 
 
-<button onclick="submit()">search </button> 
-</div>
-  <p id="x"></p>
+  <button onclick="submit()">search </button>
+    <p id="x"></p>
 
   
 <script type= "text/javascript" src="http://maps.google.com/maps/api/js?sensor=false">
+
 var x = document.getElementById("x");
 var address = document.getElementById("address");
 var lat = document.getElementById("lat");
@@ -60,11 +69,15 @@ then all categories have checkmarks
 function clickall() {
   if (document.getElementById("all").checked == true) {
     document.getElementById("nuisance").checked = true;
+    document.getElementById("zoning").checked=true;
+    document.getElementById("vehicle").checked=true;
 
-  } else
+  } else{
     document.getElementById("nuisance").checked = false;
+    document.getElementById("zoning").checked = false;
+    document.getElementById("vehicle").checked = false;
 }
-
+}
 //does not work yet
 function submit() {
 
@@ -77,9 +90,9 @@ function submit() {
 
 //tries to find the LatLon of the address
 function getAddressLatLon(addressValue) {
-  x.innerHTML="you typed this "+addressValue;
+  x.innerHTML="you typed this "+ addressValue;
   
-  /*
+  
   var geocoder = new google.maps.Geocoder();
   var address = addressValue;
 
@@ -88,13 +101,15 @@ function getAddressLatLon(addressValue) {
   }, function(results, status) {
 
     if (status == google.maps.GeocoderStatus.OK) {
-      lat.value = results[0].geometry.location.lat();
-      lon.value = results[0].geometry.location.lng();
-      alert(latitude);
+      document.getElementById("lat").value = results[0].geometry.location.lat();
+      document.getElementById("lon").value = results[0].geometry.location.lng();
+      alert(lat);
     }
   });
-  */
+
+  
 }
+
 </script>
 
 </body>
