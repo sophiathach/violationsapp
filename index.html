@@ -11,13 +11,6 @@
   <body>
   <div id="form">
 
-  Address:
-  <input type="text" id="address" name="address" value="">
-
-  <br>
-  <br>or
-  <br>
-  <br>
   <p>Click the button to get your coordinates.</p>
    Latitude:
 
@@ -39,10 +32,9 @@
 <input type="checkbox" id="vehicle"> vehicle <br>
 </div>
 
-  <button onclick="submit()">search </button>
+  <button onclick="getViolations()">search </button>
     <p id="x"></p>
-  <input type="button" onclick="getViolations()"/>
-     <div id="map" style="height:600px"></div>
+     <div id="map" style="height:600px; width:80%"></div>
   </body>
     <script>
 
@@ -51,6 +43,7 @@
         var address = document.getElementById("address");
         var lat = document.getElementById("lat");
         var lon = document.getElementById("lon");
+        var radius = document.getElementById("radius");
 
         function getLocation() {
           if (navigator.geolocation) {
@@ -120,16 +113,27 @@
         }
 
 
-
-
         var getViolations = function (){
-        //var getViolations = function (lat, long, diameter){
-              //var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + lat + ',' + long + ',' + diameter + ')';
-            var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + '36.075208' + ',' + '-79.821715' + ',' + '1000' + ')';
+            var query = '&$q=';
+            if (document.getElementById("nuisance").checked) {query += 'nuisance'}
+            if (document.getElementById("zoning").checked) {query += 'zoning'}
+            if (document.getElementById("vehicle").checked) {query += 'vehicle'}
+            if (document.getElementById("all").checked) {query = ''}
+
+
+            var url = "https://brigades.opendatanetwork.com/resource/" +
+                    "eh9f-tamt.json?$where=within_circle(location," +
+                    lat.value + ',' +
+                    lon.value + ',' +
+                    radius.value * 1609.34 + ')' +
+                    query;
+            center = [parseFloat(lat.value), parseFloat(lon.value)];
+            console.log(url);
                 $.ajax({
                       url: url
                     }).done(function(violations) {
                       //return obj;
+                    console.log(violations);
                       update(violations)
                     });
             };
@@ -149,8 +153,9 @@
         };
         var update = function (violations) {
             //getViolations(36.075208, -79.821715, 1000).forEach(makeMarker, element);
-            console.log(violations);
             violations.forEach(makeMarker);
+
+            map.setView(center, 14 - Math.round(radius.value * .7));
         };
     </script>
 </html>
