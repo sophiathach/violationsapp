@@ -1,10 +1,85 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title>Violations Identifier</title>
-</head>
+<body>
+<div id="map" />
+<div id="form">
+<p>Click the button to get your coordinates.</p>
+Address: <input type="text" id="address" name="address" value="">
 
-<h2> Is there a violation near you?</h2>
+   <br><br>or<br><br>  
+
+Latitude:<input type="text" id="lat" name="lat" value="">
+Longitude: <input type="text" id="lon" name"lon" value="">
+   <p id="x"></p>
+<button onclick="getLocation()" >
+<image src="http://discoveringthebluemountains.com/assets/themes/default/images/geolocation.png"
+width="15px" height="15px"></button><br>
+
+Radius:<input type="text" size="1" id="radius"> miles<br>
+
+<input type="checkbox" id="all" onclick="clickall()" clicked="true"> all<br>
+<input type="checkbox" id="nuisance"> nuisance<br>
+<input type="checkbox" id="crime"> crime <br>
+<input type="checkbox" id="potato"> potato <br>
 
 
+<button onclick="submit()">search </button> 
+</div>
 
-</html
+<script>
+var x=document.getElementById("x");
+	var address=document.getElementById("address");
+	var lat="";
+	var lon="";
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+
+function showPosition(position) {
+lat.value=position.coords.latitude;
+lon.value=position.coords.longitude;
+    x.innerHTML = "Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude;	
+}
+
+/*
+
+This ensures that checkboxes reaction to "all":
+
+When "All" checkbox has checkmark, 
+then all categories have checkmarks
+
+
+*/
+function clickall(){
+if(document.getElementById("all").checked==true){
+document.getElementById("nuisance").checked = true;
+
+}else
+document.getElementById("nuisance").checked=false;}
+
+
+//does not work yet
+function submit(){
+
+	//if address has something in it go find the coordinates
+	if (address.value != "") {
+		x.innerHTML=addresLatLon(address.value);
+
+	};
+}
+
+//tries to find the LatLon of the address
+function getAddressLatLon(addressvalue){
+
+x.innerHTML="you typed "+ addressvalue;
+}
+</script>
+
+</body>
+</html>
