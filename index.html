@@ -1,10 +1,156 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title>Violations Identifier</title>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <title>Hackathon Project</title>
+     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+      <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+      <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="/js/bundle.js" type="text/javascript"></script>
+  </head>
+  <body>
+  <div id="form">
 
-<h2> Is there a violation near you?</h2>
+  Address:
+  <input type="text" id="address" name="address" value="">
+
+  <br>
+  <br>or
+  <br>
+  <br>
+  <p>Click the button to get your coordinates.</p>
+   Latitude:
+
+  <input type="text" id="lat" name="lat" value=""> Longitude:
+  <input type="text" id="lon" name "lon" value="">
+
+  <button onclick="getLocation()">
+
+    <image src="http://discoveringthebluemountains.com/assets/themes/default/images/geolocation.png" width="15px" height="15px">
+  </button>
+  <br> Radius:
+
+  <input type="text" size="3" id="radius"> miles
+  <br>
+
+<input type="checkbox" id="all" onclick="clickall()" clicked="true"> all<br>
+<input type="checkbox" id="nuisance"> nuisance<br>
+<input type="checkbox" id="zoning"> zoning <br>
+<input type="checkbox" id="vehicle"> vehicle <br>
+</div>
+
+  <button onclick="submit()">search </button>
+    <p id="x"></p>
+  <input type="button" onclick="getViolations()"/>
+     <div id="map" style="height:600px"></div>
+  </body>
+    <script>
+
+
+        var x = document.getElementById("x");
+        var address = document.getElementById("address");
+        var lat = document.getElementById("lat");
+        var lon = document.getElementById("lon");
+
+        function getLocation() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+          } else {
+            x.innerHTML = "Geolocation is not supported by this browser.";
+          }
+        }
+
+        function showPosition(position) {
+          lat.value = position.coords.latitude;
+          lon.value = position.coords.longitude;
+
+        }
+
+        /*
+
+        This ensures that checkboxes reaction to "all":
+
+        When "All" checkbox has checkmark,
+        then all categories have checkmarks
+
+
+        */
+        function clickall() {
+          if (document.getElementById("all").checked == true) {
+            document.getElementById("nuisance").checked = true;
+            document.getElementById("zoning").checked=true;
+            document.getElementById("vehicle").checked=true;
+
+          } else{
+            document.getElementById("nuisance").checked = false;
+            document.getElementById("zoning").checked = false;
+            document.getElementById("vehicle").checked = false;
+        }
+        }
+        //does not work yet
+        function submit() {
+
+          //if address has something in it go find the coordinates
+          if (address.value != "") {
+            addressLatLon(address.value);
+
+          };
+        }
+
+        //tries to find the LatLon of the address
+        function getAddressLatLon(addressValue) {
+          x.innerHTML="you typed this "+ addressValue;
+
+
+          var geocoder = new google.maps.Geocoder();
+          var address = addressValue;
+
+          geocoder.geocode({
+            'address': address
+          }, function(results, status) {
+
+            if (status == google.maps.GeocoderStatus.OK) {
+              document.getElementById("lat").value = results[0].geometry.location.lat();
+              document.getElementById("lon").value = results[0].geometry.location.lng();
+              alert(lat);
+            }
+          });
+
+
+        }
 
 
 
-</html
+
+        var getViolations = function (){
+        //var getViolations = function (lat, long, diameter){
+              //var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + lat + ',' + long + ',' + diameter + ')';
+            var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + '36.075208' + ',' + '-79.821715' + ',' + '1000' + ')';
+                $.ajax({
+                      url: url
+                    }).done(function(violations) {
+                      //return obj;
+                      update(violations)
+                    });
+            };
+        var map = L.map('map').setView([36.075208, -79.821715], 13);
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Code For Greensboro',
+            maxZoom: 18,
+            id: 'codylandry.cigpez9x300ttv1koicws02s8',
+            accessToken: 'pk.eyJ1IjoiY29keWxhbmRyeSIsImEiOiJjaWdwZXpiNWEwMHR4djFrb3YwemU3dXM5In0.m6iy8uIHqSXsPmLeFKiewA'
+        }).addTo(map);
+        var makeMarker = function (obj) {
+            L.marker([parseFloat(obj.location.latitude),parseFloat(obj.location.longitude)]).bindPopup(
+                    "<h4>" + obj.address + "</h4>" +
+                    "<p><em> Opened: " + obj.entry_date + "</em></p>" +
+                    "<p><em>Closed: " + obj.closed_date + "</em></p>" +
+                    "<p>" + obj.case_notes || '' + "</p>").addTo(map);
+        };
+        var update = function (violations) {
+            //getViolations(36.075208, -79.821715, 1000).forEach(makeMarker, element);
+            console.log(violations);
+            violations.forEach(makeMarker);
+        };
+    </script>
+</html>

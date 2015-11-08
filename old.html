@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hackathon Project</title>
+     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+      <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+      <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="/js/bundle.js" type="text/javascript"></script>
+  </head>
+  <body>
+  <input type="button" onclick="getViolations()"/>
+     <div id="map" style="height:600px"></div>
+  </body>
+    <script>
+        var getViolations = function (){
+        //var getViolations = function (lat, long, diameter){
+              //var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + lat + ',' + long + ',' + diameter + ')';
+            var url = "https://brigades.opendatanetwork.com/resource/eh9f-tamt.json?$where=within_circle(location," + '36.075208' + ',' + '-79.821715' + ',' + '1000' + ')';
+                $.ajax({
+                      url: url
+                    }).done(function(violations) {
+                      //return obj;
+                      update(violations)
+                    });
+            };
+        var map = L.map('map').setView([36.075208, -79.821715], 13);
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Code For Greensboro',
+            maxZoom: 18,
+            id: 'codylandry.cigpez9x300ttv1koicws02s8',
+            accessToken: 'pk.eyJ1IjoiY29keWxhbmRyeSIsImEiOiJjaWdwZXpiNWEwMHR4djFrb3YwemU3dXM5In0.m6iy8uIHqSXsPmLeFKiewA'
+        }).addTo(map);
+        var makeMarker = function (obj) {
+            L.marker([parseFloat(obj.location.latitude),parseFloat(obj.location.longitude)]).bindPopup(
+                    "<h4>" + obj.address + "</h4>" +
+                    "<p><em> Opened: " + obj.entry_date + "</em></p>" +
+                    "<p><em>Closed: " + obj.closed_date + "</em></p>" +
+                    "<p>" + obj.case_notes || '' + "</p>").addTo(map);
+        };
+        var update = function (violations) {
+            //getViolations(36.075208, -79.821715, 1000).forEach(makeMarker, element);
+            console.log(violations);
+            violations.forEach(makeMarker);
+        };
+    </script>
+</html>
